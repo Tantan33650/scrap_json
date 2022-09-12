@@ -1,16 +1,30 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    csv (3.2.5)
+    date (3.2.2)
+    json (2.6.2)
     minitest (5.14.4)
+    open-uri (0.2.0)
+      stringio
+      time
+      uri
     rake (13.0.4)
+    stringio (3.0.2)
+    time (0.2.0)
+      date
+    uri (0.11.0)
 
 PLATFORMS
   x86_64-darwin-20
   x86_64-linux
 
 DEPENDENCIES
+  csv (~> 3.2, >= 3.2.5)
+  json (~> 2.6, >= 2.6.2)
   minitest
+  open-uri (~> 0.2.0)
   rake
 
 BUNDLED WITH
-  2.2.22
+   2.2.22
