@@ -3,22 +3,48 @@
 require 'open-uri'
 require 'csv'
 require 'json'
-require 'colorize'
 
 
 class OmnibookScrapingTool
 
   def initialize url_to_company_list
     json_list = URI.open url_to_company_list
-    @columns_names_array = ["company_name", "address", "phone_number", "email_address", "website"]
     @array_of_hash = JSON.parse json_list.read # @array_of_hash.class => Array.
   end
 
-  def save_info_to save_to_path
+  def save_leaders_infos save_to_path
     CSV.open save_to_path, "w" do |csv|
-      csv << @columns_names_array
-      @array_of_hash.each do |x| # x.class => Hash
-        csv << build_company_line(x)
+      csv << ["leader_name", "company_name", "job_title", "job_details", "phone_number", "email_address", "website"]
+      @array_of_hash.each do |company| # company.class => Hash
+        company_informations = extract_data_from_company(company)
+        company['leaders'].each do |leader| # company['leaders'].class => Hash
+          leaders_informations = extract_data_from_leader(leader)
+          csv << [
+            leaders_informations['leader_name'],
+            company_informations['company_name'],
+            leaders_informations['job_title'],
+            leaders_informations['job_details'],
+            leaders_informations['leader_phone_number'],
+            leaders_informations['leader_email'],
+            company_informations['website']
+          ]
+        end unless company['leaders'].nil?
+      end
+    end
+  end
+
+  def save_companies_infos save_to_path
+    CSV.open save_to_path, "w" do |csv|
+      csv << ["company_name", "company_address", "company_phone_number", "company_email_address", "company_website"]
+      @array_of_hash.each do |company|
+        company_informations = extract_data_from_company(company)
+        csv << [
+          company_informations['company_name'],
+          company_informations['company_address'],
+          company_informations['company_phone_number'],
+          company_informations['company_email_address'],
+          company_informations['company_website']
+        ]
       end
     end
   end
@@ -27,27 +53,40 @@ class OmnibookScrapingTool
     @array_of_hash.size
   end
 
-  def display_line_from_list x
-    line = @array_of_hash[x]
-    puts " Company name:   " + "#{line["h"]}"
-    puts " Address:        " + "#{line["j"]} #{line["k"]} #{line["m"]} #{line["n"]} #{line["o"]} #{line["p"]} #{line["q"]}".strip
-    puts " Phone number:   " + "#{line["r"]}"
-    puts " Email address:  " + "#{line["u"]}" 
-    puts " Webstide:       " + "#{line["v"]}"
-  end
-
   private
 
-  def build_company_line x
-    company_name  = x["h"]
-    address       = "#{x["j"]} #{x["k"]} #{x["m"]} #{x["n"]} #{x["o"]} #{x["p"]} #{x["q"]}".strip
-    phone_number  = x["r"]
-    email_address = x["u"]
-    website       = x["v"]
-    return        [company_name, address, phone_number, email_address, website]
+  def extract_data_from_company(c)
+    company_name          = c['h'].nil? ? 'Not specified' : c['h']
+    company_website       = c['v'].nil? ? 'Not specified' : c['v']
+    company_address       = "#{c["j"]} #{c["k"]} #{c["m"]} #{c["n"]} #{c["o"]} #{c["p"]} #{c["q"]}".strip
+    company_phone_number  = c["r"]
+    company_email_address = c["u"]
+    return {
+      'company_name' => company_name,
+      'company_website' => company_website,
+      'company_address' => company_address,
+      'company_phone_number' => company_phone_number,
+      'company_email_address' => company_email_address
+    }
+  end
+
+  def extract_data_from_leader(leader)
+    leader_name         = "#{leader['du']} #{leader['dv']}"
+    job_title           = leader['dw'].nil? ? 'Not specified' : leader['dw']
+    job_details         = leader['dr'].nil? ? 'Not specified' : leader['dr']
+    leader_phone_number = leader['dx'].nil? ? 'Not specified' : leader['dx']
+    leader_email        = leader['dy'].nil? ? 'Not specified' : leader['dy']
+    return {
+      'leader_name'         => leader_name,
+      'job_title'           => job_title,
+      'job_details'         => job_details,
+      'leader_phone_number' => leader_phone_number,
+      'leader_email'        => leader_email
+    }
   end
 
 end
+
 
 class OmnibookScrapingToolApp
 
@@ -59,20 +98,14 @@ class OmnibookScrapingToolApp
     print "\n --> Scraping from #{@url_to_company_list}..."
     start_time = Time.now
     omnibook_scraping_tool = OmnibookScrapingTool.new(@url_to_company_list)
-    omnibook_scraping_tool.save_info_to '../assests/scrap.csv'
+    omnibook_scraping_tool.save_leaders_infos '../assests/omnibook_leaders.csv'
+    omnibook_scraping_tool.save_companies_infos '../assests/omnibook_companies.csv'
     end_time = Time.now
     puts " done!"
     puts " --> Saved #{omnibook_scraping_tool.size_of_list} elements on '../assests/scrap.csv'."
     puts "     (#{(end_time - start_time).round(3)}ms)"
-    puts "\n" + " First element of the list... ".colorize(background: :white, color: :black)
-    omnibook_scraping_tool.display_line_from_list(1)
-    puts "\n" + " Last element of the list... ".colorize(background: :white, color: :black)
-    omnibook_scraping_tool.display_line_from_list(omnibook_scraping_tool.size_of_list - 1)
-    puts "\nPress enter to quit"
-    gets
   end
 
 end
 
-system 'cls'; system 'clear'
 OmnibookScrapingToolApp.new.execute
