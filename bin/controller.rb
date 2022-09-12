@@ -14,7 +14,7 @@ class OmnibookScrapingTool
 
   def save_leaders_infos save_to_path
     CSV.open save_to_path, "w" do |csv|
-      csv << ["leader_name", "company_name", "job_title", "job_details", "phone_number", "email_address", "website"]
+      csv << ["leader_name", "company_name", "job_title", "phone_number", "email_address", "website"]
       @array_of_hash.each do |company| # company.class => Hash
         company_informations = extract_data_from_company(company)
         company['leaders'].each do |leader| # company['leaders'].class => Hash
@@ -23,10 +23,9 @@ class OmnibookScrapingTool
             leaders_informations['leader_name'],
             company_informations['company_name'],
             leaders_informations['job_title'],
-            leaders_informations['job_details'],
             leaders_informations['leader_phone_number'],
             leaders_informations['leader_email'],
-            company_informations['website']
+            company_informations['company_website']
           ]
         end unless company['leaders'].nil?
       end
@@ -72,14 +71,12 @@ class OmnibookScrapingTool
 
   def extract_data_from_leader(leader)
     leader_name         = "#{leader['du']} #{leader['dv']}"
-    job_title           = leader['dw'].nil? ? 'Not specified' : leader['dw']
-    job_details         = leader['dr'].nil? ? 'Not specified' : leader['dr']
+    job_title           = leader['dw'].nil? ? 'Not specified' : leader['dr']
     leader_phone_number = leader['dx'].nil? ? 'Not specified' : leader['dx']
     leader_email        = leader['dy'].nil? ? 'Not specified' : leader['dy']
     return {
       'leader_name'         => leader_name,
       'job_title'           => job_title,
-      'job_details'         => job_details,
       'leader_phone_number' => leader_phone_number,
       'leader_email'        => leader_email
     }
