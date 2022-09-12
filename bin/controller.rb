@@ -102,8 +102,8 @@ class OmnibookScrapingToolApp
     omnibook_scraping_tool.save_companies_infos '../assets/omnibook_companies.csv'
     end_time = Time.now
     puts " done!"
-    puts " --> Saved #{omnibook_scraping_tool.size_of_list} elements on '../assets/scrap.csv'."
-    puts " --> Saved #{omnibook_scraping_tool.size_of_list} elements on '../assets/scrap.csv'."
+    puts " --> Saved #{omnibook_scraping_tool.size_of_list} elements on '../assets/omnibook_leaders.csv'."
+    puts " --> Saved #{omnibook_scraping_tool.size_of_list} elements on '../assets/omnibook_companies.csv'."
     puts "     (#{(end_time - start_time).round(3)}ms)"
     puts
   end
