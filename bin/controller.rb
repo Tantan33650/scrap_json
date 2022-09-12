@@ -98,8 +98,8 @@ class OmnibookScrapingToolApp
     print "\n --> Scraping from #{@url_to_company_list}..."
     start_time = Time.now
     omnibook_scraping_tool = OmnibookScrapingTool.new(@url_to_company_list)
-    omnibook_scraping_tool.save_leaders_infos '../assets/omnibook_leaders.csv'
-    omnibook_scraping_tool.save_companies_infos '../assets/omnibook_companies.csv'
+    omnibook_scraping_tool.save_leaders_infos 'omnibook_leaders.csv'
+    omnibook_scraping_tool.save_companies_infos 'omnibook_companies.csv'
     end_time = Time.now
     puts " done!"
     puts " --> Saved #{omnibook_scraping_tool.size_of_list} elements on '../assets/omnibook_leaders.csv'."
