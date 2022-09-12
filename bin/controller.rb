@@ -71,7 +71,7 @@ class OmnibookScrapingTool
 
   def extract_data_from_leader(leader)
     leader_name         = "#{leader['du']} #{leader['dv']}"
-    job_title           = leader['dw'].nil? ? 'Not specified' : leader['dr']
+    job_title           = leader['dw'].nil? ? leader['dr'] : leader['dw']
     leader_phone_number = leader['dx'].nil? ? 'Not specified' : leader['dx']
     leader_email        = leader['dy'].nil? ? 'Not specified' : leader['dy']
     return {
